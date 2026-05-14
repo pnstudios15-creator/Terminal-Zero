@@ -45,14 +45,32 @@ room_1_walls = [
     ["#"," "," "," "," "," "," "," "," ","#"],
     ["#","#","#","#"," ","#","#","#","#","#"],
 ]
+    #Parede sala 2 (tunel)
+room_2_walls = [
+    ["#","#","#","#"," ","#","#","#","#","#"],
+    ["#"," "," ","#"," ","#"," "," "," ","#"],
+    ["#"," "," ","#"," ","#"," "," "," ","#"],
+    ["#"," "," ","#"," ","#"," "," "," ","#"],
+    ["#"," "," ","#"," ","#"," "," "," ","#"],
+    ["#"," "," ","#"," ","#"," "," "," ","#"],
+    ["#"," "," ","#"," ","#"," "," "," ","#"],
+    ["#"," "," ","#"," ","#"," "," "," ","#"],
+    ["#"," "," ","#"," ","#"," "," "," ","#"],
+    ["#","#","#","#"," ","#","#","#","#","#"],
+]
 
+game_state = {
+    'current_room': 'room_1' 
+}
 
 names = {
-'room_1_name': 'SETOR NULL'
+'room_1_name': 'SETOR NULL',
+'room_2_name': 'TUNEL'
 }
 
 walls = {
-'room_1': room_1_walls
+'room_1': room_1_walls,
+'room_2': room_2_walls
 }
 
 atual_room = 'room_1'
@@ -60,7 +78,7 @@ atual_room_name = 'room_1_name'
 
 
 def rendering():
-    atual_walls = walls[atual_room]
+    atual_walls = walls[game_state["current_room"]]
     print(f'Local: {names[atual_room_name]}')
     for linha in range(10):
         for coluna in range(10):
@@ -93,7 +111,7 @@ def move():
     elif movement == 'a': new_y -= 1
     elif movement == 's': new_x += 1
     elif movement == 'd': new_y += 1
-    atual_walls = walls[atual_room]
+    atual_walls = walls[game_state["current_room"]]
     if atual_walls[new_x][new_y] != "#":
         player['x'] = new_x
         player['y'] = new_y
@@ -101,6 +119,10 @@ def move():
         show_paper_text()
         paper_1['x'] = -1
         paper_1['y'] = -1
+    if player['x'] == 9 and player['y'] == 4:
+        game_state["current_room"] = 'room_2'
+        player['x'] = 0
+        player['y'] = 4
                
 while True:
     clear_screen()

@@ -1,5 +1,11 @@
 import os
 
+# ASCII BANK
+
+# █ ▓ ▒ ╬ ╣ ╠ ═ ║
+# ◘ ¤ ≈ ▲ ▼ ◄ ►
+# ■ ◆ ♤ ♧ ♢ ♡
+
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
@@ -26,19 +32,35 @@ paper_2 = {
     "text": "[NOTA RECUPERADA]\nAs telas ainda estão ligadas.\nMas ninguém aparece nelas.\nMesmo assim...\nos sensores continuam detectando movimento."
 }
 
-old_computer = {
+paper_3 = {
+    "chr": "◆",
+    "text": "[NOTA RECUPERADA]\nSenha;\nZero1234"
+}
+
+
+old_computer_1 = {
     "y": 5,
     "x": 8,
     "room": "room_3",
-    "chr": "■",
+    "chr": "◘",
     "text": "[Computador]\n+--------------+\n| No Signal... |\n+--------------+"
 }
 
 door_1 = {
-"chr": '[]',
+"chr": '█',
 "room": "room_3",
 "x": 0,
 "y": 4,
+}
+
+trashcan_1 = {
+    "y": 7,
+    "x": 8,
+    "room": "room_3",
+    "chr": "U",
+    "text": "Lata de lixo...\nAparentemente tem um papel aqui...",
+    "inside_item": paper_3,
+    "taken": False
 }
 
 doors = [
@@ -48,10 +70,16 @@ doors = [
 items = [
     paper_1,
     paper_2,
-    old_computer
+    trashcan_1
 ]
 
-solid_chars = ["#", "=", "/", "|", "x"]
+computers = [
+    old_computer_1
+]
+
+collected_items = []
+
+solid_chars = ["#", "=", "/", "|", "x", "U"]
 
 # Fundo geral do jogo
 game_bg = [
@@ -83,16 +111,16 @@ room_1_walls = [
 
 # Parede sala 2 (tunel)
 room_2_walls = [
-    ["#","#","#","#"," ","#","||","#","#","%"],
-    ["#","#","#","#"," ","#","||","#","#","#"],
-    ["#","#","#","#"," ","#","||","%","#","#"],
-    ["#","#","#","#"," ","#","||","#","#","#"],
-    ["#","#","#","#"," ","#","||","#","%","#"],
-    ["#","#","#","#"," ","#","||","#","#","#"],
-    ["#","#","#","#"," ","#","||","#","#","#"],
-    ["#","#","#","#"," ","#","||","#","#","#"],
-    ["#","#","#","#"," ","#","||","#","#","%"],
-    ["#","#","#","#"," ","#","||","#","%","#"],
+    ["#","#","#","#"," ","#","║","#","#","%"],
+    ["#","#","#","#"," ","#","║","#","#","#"],
+    ["#","#","#","#"," ","#","║","%","#","#"],
+    ["#","#","#","#"," ","#","║","#","#","#"],
+    ["#","#","#","#"," ","#","║","#","%","#"],
+    ["#","#","#","#"," ","#","║","#","#","#"],
+    ["#","#","#","#"," ","#","║","#","#","#"],
+    ["#","#","#","#"," ","#","║","#","#","#"],
+    ["#","#","#","#"," ","#","║","#","#","%"],
+    ["#","#","#","#"," ","#","║","#","%","#"],
 ]
 
 room_3_walls = [
@@ -108,6 +136,19 @@ room_3_walls = [
     ["#","#","#","#","#","#","#","#","#","#"],
 ]
 
+room_4_walls = [
+    ["#","#","#","#","#","#","║","#","#","%"],
+    ["#","#","#","#","#","#","║","#","#","#"],
+    ["#","#","#","#","#","#","║","%","#","#"],
+    ["#","#","#","#","#","#","║","#","#","#"],
+    [" "," "," "," "," "," "," "," "," "," "],
+    ["#","#","#","#","#","#","║","#","#","#"],
+    ["=","=","=","=","=","=","║","#","#","#"],
+    ["#","#","#","#","#","#","║","#","#","#"],
+    ["#","#","#","#","#","#","║","#","#","%"],
+    ["#","#","#","#","#","#","║","#","%","#"],
+]
+
 rooms = {
     "room_1": {
         "name": "SETOR NULL",
@@ -120,12 +161,16 @@ rooms = {
     "room_3": {
         "name": "CENTRAL DE OBSERVAÇÃO",
         "walls": room_3_walls
+    },
+    "room_4": {
+        "name": "TUNEL",
+        "walls": room_4_walls
     }
 }
 
 
 game_state = {
-    'current_room': 'room_1'
+    'current_room': 'room_3'
 }
 
 
@@ -158,12 +203,20 @@ def rendering():
                 if item['room'] == game_state['current_room']:
                     if linha == item['x'] and coluna == item['y']:
                         char = item['chr']
+                        
+            # Renderizar computadores
+            for computer in computers:
+                if computer['room'] == game_state['current_room']:
+                    if linha == computer['x'] and coluna == computer['y']:
+                        char = computer['chr']
             print(char, end=" ")
         print()
 
 
 def move_user_input():
-    movement = input('W,A,S,D > ').lower().strip()
+    movement = input('W,A,S,D or P > ').lower().strip()
+    if movement == "p":
+        print(collected_items)
     return movement
 
 
@@ -208,24 +261,46 @@ def check_items():
     for item in items:
         if item['room'] == game_state['current_room']:
             if player['x'] == item['x'] and player['y'] == item['y']:
-                print(item['text'])
-                input()
-                item['x'] = -1
-                item['y'] = -1
+                show_message(item['text'])
+                player['x'] -=1
+                
+                if item['chr'] == "U":
+                    try:
+                        if item['taken'] == False:
+                            show_message(item['inside_item']['text'])
+                            item['taken'] = True
+                            item['text'] = "Lata de lixo vazia"
+                        else:
+                            return
+                    except:
+                        return
+                if item['chr'] in solid_chars:
+                    return
+                else:
+                    if item['chr'] == "U":
+                        collected_items.append(item['inside_item'])
+                    else:
+                        collected_items.append(item)
+                    item['x'] = -1
+                    item['y'] = -1
+                
 
 
 def check_computers():
-    for item in items:
-        if item['room'] == game_state['current_room']:
+    for computer in computers:
+        if computer['room'] == game_state['current_room']:
 
-            if item['chr'] == "■":
-                dx = abs(player['x'] - item['x'])
-                dy = abs(player['y'] - item['y'])
-
-                if dx <= 1 and dy <= 1:
-                    print(item['text'])
-                    input()
+            if player['x'] == computer['x'] and player['y'] == computer['y']:
+                   show_message(computer["text"])
+                   player['x'] -= 1
+                   return
                    
+
+def show_message(text):
+    clear_screen()
+    print(text)
+    input()
+
 
 def check_room_change():
     current_room = rooms[game_state["current_room"]]
@@ -245,15 +320,27 @@ def check_room_change():
             game_state["current_room"] = "room_3"
             player['x'] = 1
             player['y'] = 4
+            print("A porta atrás de você se fechou...\nNão será mais possível voltar ao Setor NULL")
+            input()
 
     if game_state['current_room'] == "room_3":
         if player['x'] == -1 and player['y'] == 4:
             game_state["current_room"] = "room_2"
             player['x'] = 8
             player['y'] = 4
+        if player['x'] == 4 and player['y'] == 0:
+            game_state["current_room"] = "room_4"
+            player['x'] = 4
+            player['y'] = 8
+            
+    if game_state['current_room'] == "room_4":
+        if player['x'] == 4 and player['y'] == 9:
+            game_state["current_room"] = "room_3"
+            player['x'] = 4
+            player['y'] = 1
 
 
 while True:
     clear_screen()
     rendering()
-    move()
+    move()    

@@ -1,4 +1,11 @@
 import os
+try:
+    from playsound import playsound
+    def play_sound(sound):
+        playsound(sound)
+except:
+    def play_sound(sound):
+        pass
 
 # ASCII BANK
 
@@ -170,7 +177,7 @@ rooms = {
 
 
 game_state = {
-    'current_room': 'room_3'
+    'current_room': 'room_1'
 }
 
 
@@ -216,7 +223,10 @@ def rendering():
 def move_user_input():
     movement = input('W,A,S,D or P > ').lower().strip()
     if movement == "p":
-        print(collected_items)
+        for item in collected_items:
+            print(item["chr"])
+            print(item["text"])
+        input()
     return movement
 
 
@@ -268,6 +278,7 @@ def check_items():
                     try:
                         if item['taken'] == False:
                             show_message(item['inside_item']['text'])
+                            collected_items.append(item['inside_item'])
                             item['taken'] = True
                             item['text'] = "Lata de lixo vazia"
                         else:
@@ -277,10 +288,7 @@ def check_items():
                 if item['chr'] in solid_chars:
                     return
                 else:
-                    if item['chr'] == "U":
-                        collected_items.append(item['inside_item'])
-                    else:
-                        collected_items.append(item)
+                    collected_items.append(item)
                     item['x'] = -1
                     item['y'] = -1
                 
@@ -340,7 +348,10 @@ def check_room_change():
             player['y'] = 1
 
 
-while True:
-    clear_screen()
-    rendering()
-    move()    
+def init():
+    while True:
+        clear_screen()
+        rendering()
+        move()    
+
+init()

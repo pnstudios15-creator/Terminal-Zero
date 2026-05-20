@@ -1,3 +1,6 @@
+#====================#
+# Imports
+#====================#
 import os
 try:
     from playsound import playsound
@@ -13,8 +16,18 @@ except:
 # ◘ ¤ ≈ ▲ ▼ ◄ ►
 # ■ ◆ ♤ ♧ ♢ ♡
 
+#====================#
+# Função limpar tela
+#====================#
+
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
+
+#====================#
+# Objetos
+#====================#
+
+#=====Player=====#
 
 player = {
     "y": 2,
@@ -22,6 +35,8 @@ player = {
     "chr": "♤",
     "vida": 100
 }
+
+#=====Papéis/notas=====#
 
 paper_1 = {
     "y": 8,
@@ -44,6 +59,7 @@ paper_3 = {
     "text": "[NOTA RECUPERADA]\nSenha;\nZero1234"
 }
 
+#=====Computadores=====#
 
 old_computer_1 = {
     "y": 5,
@@ -52,6 +68,8 @@ old_computer_1 = {
     "chr": "◘",
     "text": "[Computador]\n+--------------+\n| No Signal... |\n+--------------+"
 }
+
+#=====Portas=====#
 
 door_1 = {
     "locked": True,
@@ -72,6 +90,8 @@ door_2 = {
     "password": "zero1234"
 }
 
+#=====Lixeiras=====#
+
 trashcan_1 = {
     "y": 7,
     "x": 8,
@@ -82,10 +102,14 @@ trashcan_1 = {
     "taken": False
 }
 
+#=====Lista de portas=====#
+
 doors = [
     door_1,
     door_2
 ]
+
+#=====Lista de itens=====#
 
 items = [
     paper_1,
@@ -93,13 +117,23 @@ items = [
     trashcan_1
 ]
 
+#=====Lista de computadores=====#
+
 computers = [
     old_computer_1
 ]
 
+#=====Lista de itens coletados=====#
+
 collected_items = []
 
-solid_chars = ["#", "=", "/", "|", "x", "U"]
+#=====Caracteres sólidos (onde há colisão)=====#
+
+solid_chars = ["#", "=", "/", "|", "x", "U", '█']
+
+#====================#
+# Desenhos das salas
+#====================#
 
 # Fundo geral do jogo
 game_bg = [
@@ -115,7 +149,7 @@ game_bg = [
     [".",".",".",".",".",".",".",".",".","."],
 ]
 
-# Parede Sala 1 (inicio)
+# Parede Sala 1 (Setor NULL)
 room_1_walls = [
     ["#","#","#","#","#","#","#","#","#","#"],
     ["#"," "," "," "," "," "," "," "," ","#"],
@@ -129,7 +163,7 @@ room_1_walls = [
     ["#","#","#","#"," ","#","#","#","#","#"],
 ]
 
-# Parede sala 2 (tunel)
+# Parede sala 2 (Túnel 1)
 room_2_walls = [
     ["#","#","#","#"," ","#","║","#","#","%"],
     ["#","#","#","#"," ","#","║","#","#","#"],
@@ -143,6 +177,7 @@ room_2_walls = [
     ["#","#","#","#"," ","#","║","#","%","#"],
 ]
 
+# Parede sala 3 (Sala de Observação)
 room_3_walls = [
     ["#","#","#","#"," ","#","#","#","#","#"],
     ["#"," "," "," "," "," "," "," "," ","#"],
@@ -156,6 +191,7 @@ room_3_walls = [
     ["#","#","#","#","#","#","#","#","#","#"],
 ]
 
+# Parede sala 4 (Tunel 2)
 room_4_walls = [
     ["#","#","#","#","#","#","║","#","#","%"],
     ["#","#","#","#","#","#","║","#","#","#"],
@@ -169,6 +205,7 @@ room_4_walls = [
     ["#","#","#","#","#","#","║","#","%","#"],
 ]
 
+# Parede sala 5 (Setor Ω)
 room_5_walls = [
     ["#","#","#","#","#","#","#","#","#","#"],
     ["#"," "," "," "," "," "," "," "," ","#"],
@@ -181,6 +218,10 @@ room_5_walls = [
     ["#"," "," "," "," "," "," "," "," ","#"],
     ["#","#","#","#"," ","#","#","#","#","#"],
 ]
+
+#====================#
+# Dicionário de salas
+#====================#
 
 rooms = {
     "room_1": {
@@ -205,16 +246,91 @@ rooms = {
     }
 }
 
+#Teste: sistema de mudança de salas
+room_transitions = [
+#Transições da sala 1
+    {
+        "from": "room_1",
+        "to": "room_2",
+
+        "enter_x": 9,
+        "enter_y": 4,
+
+        "spawn_x": 1,
+        "spawn_y": 4,
+    },
+#Transições da sala 2
+    {
+        "from": "room_2",
+        "to": "room_1",
+
+        "enter_x": 0,
+        "enter_y": 4,
+
+        "spawn_x": 8,
+        "spawn_y": 4,
+    },
+    
+    {
+        "from": "room_2",
+        "to": "room_3",
+
+        "enter_x": 9,
+        "enter_y": 4,
+
+        "spawn_x": 1,
+        "spawn_y": 4,
+    },
+#Transições da sala 3
+    {
+        "from": "room_3",
+        "to": "room_4",
+
+        "enter_x": 4,
+        "enter_y": 0,
+
+        "spawn_x": 4,
+        "spawn_y": 8,
+    },
+#Transições da sala 4
+    {
+        "from": "room_4",
+        "to": "room_3",
+
+        "enter_x": 4,
+        "enter_y": 9,
+
+        "spawn_x": 4,
+        "spawn_y": 1,
+    },
+    
+    {
+        "from": "room_4",
+        "to": "room_5",
+
+        "enter_x": 4,
+        "enter_y": 0,
+
+        "spawn_x": 4,
+        "spawn_y": 8,
+    }
+]
+
+
+#=====Estado do jogo=====#
 
 game_state = {
-    'current_room': 'room_3'
+    'current_room': 'room_1'
 }
 
+#====================#
+# Sistema de renderização
+#====================#
 
 def rendering():
     current_room = rooms[game_state["current_room"]]
     print(f'Local: {current_room["name"]}')
-    
+
     for linha in range(10):
         for coluna in range(10):
             char = game_bg[linha][coluna]
@@ -224,7 +340,7 @@ def rendering():
 
             if wall_char != " ":
                 char = wall_char
-                
+
             # Renderizar portas
             for door in doors:
                 if door['room'] == game_state['current_room']:
@@ -240,7 +356,7 @@ def rendering():
                 if item['room'] == game_state['current_room']:
                     if linha == item['x'] and coluna == item['y']:
                         char = item['chr']
-                        
+
             # Renderizar computadores
             for computer in computers:
                 if computer['room'] == game_state['current_room']:
@@ -249,6 +365,9 @@ def rendering():
             print(char, end=" ")
         print()
 
+#====================#
+# Sistema de movimento
+#====================#
 
 def move_user_input():
     movement = input('W,A,S,D or P > ').lower().strip()
@@ -259,14 +378,16 @@ def move_user_input():
         input()
     return movement
 
+#=====Atualizações pós movimento=====#
 
 def move():
     movement = move_user_input()
     move_player(movement)
     check_items()
     check_computers()
-    check_room_change()
+    test_room_change()
 
+#=====Mover Player=====#
 
 def move_player(movement):
     new_y = player['y']
@@ -280,42 +401,55 @@ def move_player(movement):
         new_x += 1
     elif movement == 'd':
         new_y += 1
-        
+
     current_room = rooms[game_state["current_room"]]
     wall_char = current_room['walls'][new_x][new_y]
     if wall_char in solid_chars:
         return
-        
-    # colisão portas
+
+    if check_doors(new_x, new_y):
+        player['x'] = new_x
+        player['y'] = new_y
+
+#=====Checar portas=====#
+
+def check_doors(next_x, next_y):    
     for door in doors:
-        if door['room'] == game_state['current_room']:
-            if new_x == door['x'] and new_y == door['y']:
-                if door["locked"] == True:
-                    if door['have_password'] == True:
-                        print("Porta trancada")
-                        user_password = input("Digite a senha para abrir a porta > ")
-                        if user_password == door['password']:
-                            door["locked"] = False
-                            door["chr"] = "╬"
-                            print("Porta Aberta")
-                            input()
-            if new_x == door['x'] and new_y == door['y'] and door["locked"] == True:
+        if door['room'] != game_state['current_room']:
+            continue
+        if next_x == door['x'] and next_y == door['y']:
+            #Porta trancada com senha
+            if door['have_password'] == True and door['locked'] == True:
+                print("Porta trancada")
+                user_password = input("Digite a senha para abrir a porta > ")
+                if user_password == door['password']:
+                    door["locked"] = False
+                    door["chr"] = "╬"
+                    print("Porta Aberta")
+                    input()
+                    return True
+                else:
+                    print("Senha inválida")
+                    input()
+                    return False
+            # porta trancada normal
+            if door["locked"] == True:
                 print("Porta trancada")
                 input()
-                return
-            else:
-                pass
-    player['x'] = new_x
-    player['y'] = new_y
-                
-                
+                return False
+    # se nenhuma porta bloqueou
+    return True
+    pass
+    
+#=====Checar itens=====#
+
 def check_items():
     for item in items:
         if item['room'] == game_state['current_room']:
             if player['x'] == item['x'] and player['y'] == item['y']:
                 show_message(item['text'])
                 player['x'] -=1
-                
+
                 if item['chr'] == "U":
                     try:
                         if item['taken'] == False:
@@ -333,8 +467,8 @@ def check_items():
                     collected_items.append(item)
                     item['x'] = -1
                     item['y'] = -1
-                
 
+#=====Checar computadores=====#
 
 def check_computers():
     for computer in computers:
@@ -344,61 +478,26 @@ def check_computers():
                    show_message(computer["text"])
                    player['x'] -= 1
                    return
-                   
+
+#=====Mostrar mensagem do item=====#
 
 def show_message(text):
     clear_screen()
     print(text)
     input()
 
+#=====Checar mudança de sala (função gigante)=====#
 
-def check_room_change():
-    current_room = rooms[game_state["current_room"]]
+def test_room_change():
+    for transition in room_transitions:
+        if game_state['current_room'] == transition['from']:
+            if player['x'] == transition['enter_x'] and player['y'] == transition['enter_y']:
+                game_state['current_room'] = transition['to']
+                player['x'] = transition['spawn_x']
+                player['y'] = transition['spawn_y']
+                return
 
-    if game_state['current_room'] == "room_1":
-        if player['x'] == 9 and player['y'] == 4:
-            game_state["current_room"] = "room_2"
-            player['x'] = 0
-            player['y'] = 4
-
-    if game_state['current_room'] == "room_2":
-        if player['x'] == -1 and player['y'] == 4:
-            game_state["current_room"] = "room_1"
-            player['x'] = 8
-            player['y'] = 4
-        if player['x'] == 9 and player['y'] == 4:
-            game_state["current_room"] = "room_3"
-            player['x'] = 1
-            player['y'] = 4
-            print("A porta atrás de você se fechou...\nNão será mais possível voltar ao Setor NULL")
-            input()
-
-    if game_state['current_room'] == "room_3":
-        if player['x'] == -1 and player['y'] == 4:
-            game_state["current_room"] = "room_2"
-            player['x'] = 8
-            player['y'] = 4
-        if player['x'] == 4 and player['y'] == 0:
-            game_state["current_room"] = "room_4"
-            player['x'] = 4
-            player['y'] = 8
-            
-    if game_state['current_room'] == "room_4":
-        if player['x'] == 4 and player['y'] == 9:
-            game_state["current_room"] = "room_3"
-            player['x'] = 4
-            player['y'] = 1
-        if player['x'] == 4 and player['y'] == 0:
-            game_state["current_room"] = "room_5"
-            player['x'] = 4
-            player['y'] = 8
-
-    if game_state['current_room'] == "room_5":
-        if player['x'] == 4 and player['y'] == 9:
-            game_state["current_room"] = "room_4"
-            player['x'] = 4
-            player['y'] = 1
-
+#=====inicializadora do jogo=====#
 
 def init():
     while True:

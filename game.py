@@ -54,10 +54,22 @@ old_computer_1 = {
 }
 
 door_1 = {
-"chr": '█',
-"room": "room_3",
-"x": 0,
-"y": 4,
+    "locked": True,
+    "chr": '█',
+    "room": "room_3",
+    "x": 0,
+    "y": 4,
+    "have_password": False,
+}
+
+door_2 = {
+    "locked": True,
+    "chr": '█',
+    "room": "room_4",
+    "x": 4,
+    "y": 0,
+    "have_password": True,
+    "password": "zero1234"
 }
 
 trashcan_1 = {
@@ -71,7 +83,8 @@ trashcan_1 = {
 }
 
 doors = [
-    door_1
+    door_1,
+    door_2
 ]
 
 items = [
@@ -156,6 +169,19 @@ room_4_walls = [
     ["#","#","#","#","#","#","║","#","%","#"],
 ]
 
+room_5_walls = [
+    ["#","#","#","#","#","#","#","#","#","#"],
+    ["#"," "," "," "," "," "," "," "," ","#"],
+    ["#"," "," "," "," "," "," "," "," ","#"],
+    ["#"," "," "," "," "," "," "," "," ","#"],
+    ["#"," "," "," "," "," "," "," "," "," "],
+    ["#"," "," "," "," "," "," "," "," ","#"],
+    ["#"," "," "," "," "," "," "," "," ","#"],
+    ["#"," "," "," "," "," "," "," "," ","#"],
+    ["#"," "," "," "," "," "," "," "," ","#"],
+    ["#","#","#","#"," ","#","#","#","#","#"],
+]
+
 rooms = {
     "room_1": {
         "name": "SETOR NULL",
@@ -172,12 +198,16 @@ rooms = {
     "room_4": {
         "name": "TUNEL",
         "walls": room_4_walls
+    },
+    "room_5": {
+        "name": "SETOR Ω",
+        "walls": room_5_walls
     }
 }
 
 
 game_state = {
-    'current_room': 'room_1'
+    'current_room': 'room_3'
 }
 
 
@@ -260,9 +290,21 @@ def move_player(movement):
     for door in doors:
         if door['room'] == game_state['current_room']:
             if new_x == door['x'] and new_y == door['y']:
+                if door["locked"] == True:
+                    if door['have_password'] == True:
+                        print("Porta trancada")
+                        user_password = input("Digite a senha para abrir a porta > ")
+                        if user_password == door['password']:
+                            door["locked"] = False
+                            door["chr"] = "╬"
+                            print("Porta Aberta")
+                            input()
+            if new_x == door['x'] and new_y == door['y'] and door["locked"] == True:
                 print("Porta trancada")
                 input()
                 return
+            else:
+                pass
     player['x'] = new_x
     player['y'] = new_y
                 
@@ -344,6 +386,16 @@ def check_room_change():
     if game_state['current_room'] == "room_4":
         if player['x'] == 4 and player['y'] == 9:
             game_state["current_room"] = "room_3"
+            player['x'] = 4
+            player['y'] = 1
+        if player['x'] == 4 and player['y'] == 0:
+            game_state["current_room"] = "room_5"
+            player['x'] = 4
+            player['y'] = 8
+
+    if game_state['current_room'] == "room_5":
+        if player['x'] == 4 and player['y'] == 9:
+            game_state["current_room"] = "room_4"
             player['x'] = 4
             player['y'] = 1
 

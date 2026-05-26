@@ -59,6 +59,14 @@ paper_3 = {
     "text": "[NOTA RECUPERADA]\nSenha;\nZero1234"
 }
 
+note_room_5 = {
+    "y": 7,
+    "x": 4,
+    "room": "room_5",
+    "chr": ".",
+    "text": "[SYSTEM]\nMovement detected..."
+}
+
 #=====Computadores=====#
 
 old_computer_1 = {
@@ -67,6 +75,22 @@ old_computer_1 = {
     "room": "room_3",
     "chr": "◘",
     "text": "[Computador]\n+--------------+\n| No Signal... |\n+--------------+"
+}
+
+old_computer_2 = {
+    "y": 1,
+    "x": 5,
+    "room": "room_5",
+    "chr": "■",
+    "text": "[Computador]\n+--------------+\n| Unknown      |\n| User...      |\n+--------------+"
+}
+
+old_computer_3 = {
+    "y": 5,
+    "x": 1,
+    "room": "room_5",
+    "chr": "■",
+    "text": "[Computador]\n+--------------+\n| Movement     |\n| Detected in  |\n|  [Sector Ω]  |\n+--------------+"
 }
 
 #=====Portas=====#
@@ -114,13 +138,16 @@ doors = [
 items = [
     paper_1,
     paper_2,
-    trashcan_1
+    trashcan_1,
+    note_room_5
 ]
 
 #=====Lista de computadores=====#
 
 computers = [
-    old_computer_1
+    old_computer_1,
+    old_computer_2,
+    old_computer_3
 ]
 
 #=====Lista de itens coletados=====#
@@ -313,6 +340,17 @@ room_transitions = [
 
         "spawn_x": 4,
         "spawn_y": 8,
+    },
+    
+    {
+        "from": "room_5",
+        "to": "room_4",
+
+        "enter_x": 4,
+        "enter_y": 9,
+
+        "spawn_x": 4,
+        "spawn_y": 1,
     }
 ]
 
@@ -320,7 +358,7 @@ room_transitions = [
 #=====Estado do jogo=====#
 
 game_state = {
-    'current_room': 'room_1'
+    'current_room': 'room_5'
 }
 
 #====================#
@@ -448,7 +486,16 @@ def check_items():
         if item['room'] == game_state['current_room']:
             if player['x'] == item['x'] and player['y'] == item['y']:
                 show_message(item['text'])
-                player['x'] -=1
+                if item['x'] >= 8:
+                    player['x'] -= 1
+                elif item['y'] >= 8:
+                    player['y'] -= 1
+                elif item['x'] > item['y']:
+                     player['y'] += 1
+                elif item['x'] < item['y']:
+                     player['x'] += 1                 
+                else:
+                     player['y'] +=1
 
                 if item['chr'] == "U":
                     try:
@@ -476,7 +523,16 @@ def check_computers():
 
             if player['x'] == computer['x'] and player['y'] == computer['y']:
                    show_message(computer["text"])
-                   player['x'] -= 1
+                   if computer['x'] >= 8:
+                        player['x'] -= 1
+                   elif computer['y'] >= 8:
+                        player['y'] -= 1
+                   if computer['x'] > computer['y']:
+                       player['y'] += 1
+                   elif computer['x'] < computer['y']:
+                       player['x'] += 1
+                   else:
+                       player['y'] +=1
                    return
 
 #=====Mostrar mensagem do item=====#
